@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { JobData, AnalysisResult } from './types';
+import React, { useState, useEffect } from 'react';
+import { JobData, AnalysisResult, HistoryItem } from './types';
 import { performRiskAnalysis } from './services/riskEngine';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -11,20 +11,48 @@ import Loader from './components/Loader';
 import InternshipFinder from './components/InternshipFinder';
 import SkillsRadar from './components/SkillsRadar';
 import TechStack from './components/TechStack';
+import CareerBot from './components/CareerBot';
+import ResumeMatcher from './components/ResumeMatcher';
+import NegotiationSim from './components/NegotiationSim';
+import HistoryView from './components/HistoryView';
+
+type AppView = 'home' | 'form' | 'loading' | 'result' | 'internships' | 'skills' | 'tech' | 'bot' | 'resume' | 'negotiate' | 'history';
 
 const App: React.FC = () => {
-  const [view, setView] = useState<'home' | 'form' | 'loading' | 'result' | 'internships' | 'skills' | 'tech'>('home');
+  const [view, setView] = useState<AppView>('home');
   const [lastResult, setLastResult] = useState<AnalysisResult | null>(null);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
 
-  const handleStartAnalysis = () => setView('form');
-  const handleViewInternships = () => setView('internships');
-  const handleViewSkills = () => setView('skills');
-  const handleViewTech = () => setView('tech');
-  
+  // Load history on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('jobshield_history');
+    if (saved) {
+      try {
+        setHistory(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to parse history", e);
+      }
+    }
+  }, []);
+
+  // Save history on change
+  useEffect(() => {
+    localStorage.setItem('jobshield_history', JSON.stringify(history));
+  }, [history]);
+
   const handleFormSubmit = async (data: JobData) => {
     setView('loading');
     try {
       const result = await performRiskAnalysis(data);
+      
+      const newHistoryItem: HistoryItem = {
+        id: crypto.randomUUID(),
+        timestamp: Date.now(),
+        jobData: data,
+        result: result
+      };
+
+      setHistory(prev => [newHistoryItem, ...prev]);
       setLastResult(result);
       setView('result');
     } catch (error) {
@@ -34,26 +62,42 @@ const App: React.FC = () => {
     }
   };
 
-  const handleReset = () => {
-    setLastResult(null);
-    setView('home');
+  const handleViewHistoricalItem = (item: HistoryItem) => {
+    setLastResult(item.result);
+    setView('result');
+  };
+
+  const handleDeleteHistoryItem = (id: string) => {
+    setHistory(prev => prev.filter(item => item.id !== id));
+  };
+
+  const handleClearHistory = () => {
+    if (window.confirm("Are you sure you want to clear all history?")) {
+      setHistory([]);
+    }
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-slate-50">
       <Navbar 
-        onHomeClick={handleReset} 
-        onInternshipsClick={handleViewInternships}
-        onSkillsClick={handleViewSkills}
-        onTechClick={handleViewTech}
+        onHomeClick={() => setView('home')} 
+        onInternshipsClick={() => setView('internships')}
+        onSkillsClick={() => setView('skills')}
+        onTechClick={() => setView('tech')}
+        onBotClick={() => setView('bot')}
+        onResumeClick={() => setView('resume')}
+        onNegotiateClick={() => setView('negotiate')}
+        onHistoryClick={() => setView('history')}
+        historyCount={history.length}
       />
       
       <main className="flex-grow container mx-auto px-4 py-8">
         {view === 'home' && (
           <HomeView 
-            onStart={handleStartAnalysis} 
-            onViewInternships={handleViewInternships}
-            onViewSkills={handleViewSkills}
+            onStart={() => setView('form')} 
+            onViewInternships={() => setView('internships')}
+            onViewSkills={() => setView('skills')}
+            onViewBot={() => setView('bot')}
           />
         )}
         
@@ -88,6 +132,17 @@ const App: React.FC = () => {
         {view === 'internships' && <InternshipFinder />}
         {view === 'skills' && <SkillsRadar />}
         {view === 'tech' && <TechStack />}
+        {view === 'bot' && <CareerBot />}
+        {view === 'resume' && <ResumeMatcher />}
+        {view === 'negotiate' && <NegotiationSim />}
+        {view === 'history' && (
+          <HistoryView 
+            history={history} 
+            onView={handleViewHistoricalItem} 
+            onDelete={handleDeleteHistoryItem}
+            onClearAll={handleClearHistory}
+          />
+        )}
       </main>
 
       <Footer />

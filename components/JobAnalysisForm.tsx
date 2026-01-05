@@ -56,13 +56,15 @@ const JobAnalysisForm: React.FC<Props> = ({ onSubmit }) => {
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-3xl shadow-xl shadow-slate-200 p-8 border border-slate-100 space-y-6">
       <div className="space-y-2 border-b border-slate-100 pb-4 mb-4">
-        <h2 className="text-2xl font-bold text-slate-800">Verify Job Posting</h2>
-        <p className="text-slate-500 text-sm">Provide details or a screenshot of the offer for analysis.</p>
+        <h2 className="text-2xl font-bold text-slate-800">New Job Verification</h2>
+        <p className="text-slate-500 text-sm leading-relaxed">
+          Protect yourself by analyzing the details of your job offer. For the best results, upload a screenshot of the offer and paste the full job description below.
+        </p>
       </div>
 
       {/* Image Upload Section */}
       <div className="space-y-3">
-        <label className="text-sm font-semibold text-slate-700 block">Offer Screenshot (Optional)</label>
+        <label className="text-sm font-semibold text-slate-700 block">Offer Screenshot (Optional but recommended)</label>
         {!formData.offerImage ? (
           <div 
             onClick={() => fileInputRef.current?.click()}
@@ -71,8 +73,8 @@ const JobAnalysisForm: React.FC<Props> = ({ onSubmit }) => {
             <div className="w-12 h-12 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center group-hover:bg-indigo-100 group-hover:text-indigo-500 transition-colors">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
             </div>
-            <p className="mt-2 text-sm text-slate-500 font-medium">Click to upload or drag screenshot</p>
-            <p className="text-xs text-slate-400">WhatsApp, LinkedIn, or Email screenshot</p>
+            <p className="mt-2 text-sm text-slate-500 font-medium">Click to Upload Screenshot</p>
+            <p className="text-xs text-slate-400">Works with WhatsApp, LinkedIn, or Email screenshots</p>
             <input 
               type="file" 
               ref={fileInputRef} 
@@ -105,7 +107,7 @@ const JobAnalysisForm: React.FC<Props> = ({ onSubmit }) => {
             name="jobTitle"
             value={formData.jobTitle}
             onChange={handleChange}
-            placeholder="e.g. Remote Data Entry"
+            placeholder="e.g. Remote Designer"
             className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
           />
         </div>
@@ -116,14 +118,14 @@ const JobAnalysisForm: React.FC<Props> = ({ onSubmit }) => {
             name="companyName"
             value={formData.companyName}
             onChange={handleChange}
-            placeholder="e.g. Acme Corp"
+            placeholder="e.g. Google"
             className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
           />
         </div>
       </div>
 
       <div className="space-y-1">
-        <label className="text-sm font-semibold text-slate-700">Recruiter Email (Optional)</label>
+        <label className="text-sm font-semibold text-slate-700">Recruiter Email</label>
         <input 
           type="email"
           name="recruiterEmail"
@@ -135,31 +137,31 @@ const JobAnalysisForm: React.FC<Props> = ({ onSubmit }) => {
       </div>
 
       <div className="space-y-1">
-        <label className="text-sm font-semibold text-slate-700">Job Description</label>
+        <label className="text-sm font-semibold text-slate-700">Full Job Description</label>
         <textarea 
           required
           name="jobDescription"
           value={formData.jobDescription}
           onChange={handleChange}
           rows={4}
-          placeholder="Paste description text here..."
+          placeholder="Paste the full job description or offer text here..."
           className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all resize-none"
         />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-1">
-          <label className="text-sm font-semibold text-slate-700">Salary Offered (Optional)</label>
+          <label className="text-sm font-semibold text-slate-700">Offered Salary (Optional)</label>
           <input 
             name="salary"
             value={formData.salary}
             onChange={handleChange}
-            placeholder="e.g. $50/hour"
+            placeholder="e.g. $60/hour or $120k/yr"
             className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
           />
         </div>
         <div className="space-y-1">
-          <label className="text-sm font-semibold text-slate-700">Contact Method</label>
+          <label className="text-sm font-semibold text-slate-700">Initial Contact Method</label>
           <select 
             name="contactMethod"
             value={formData.contactMethod}
@@ -182,8 +184,8 @@ const JobAnalysisForm: React.FC<Props> = ({ onSubmit }) => {
           onChange={handleChange}
           className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500 cursor-pointer"
         />
-        <label htmlFor="money" className="text-sm font-medium text-orange-800 cursor-pointer select-none">
-          Did they ask for any money/fees for training, equipment, or registration?
+        <label htmlFor="money" className="text-sm font-medium text-orange-800 cursor-pointer select-none leading-snug">
+          Did they ask for any upfront fees, equipment deposits, or ID verification via third-party links?
         </label>
       </div>
 
@@ -191,7 +193,7 @@ const JobAnalysisForm: React.FC<Props> = ({ onSubmit }) => {
         type="submit"
         className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold text-lg hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-all flex items-center justify-center space-x-2"
       >
-        <span>Analyze for Risks</span>
+        <span>Run Full Risk Analysis</span>
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
       </button>
     </form>

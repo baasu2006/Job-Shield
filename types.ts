@@ -37,3 +37,10 @@ export interface AnalysisResult {
   detailedAnalysis: string;
   verificationLinks: VerificationLink[];
 }
+
+export interface HistoryItem {
+  id: string;
+  timestamp: number;
+  jobData: JobData;
+  result: AnalysisResult;
+}
